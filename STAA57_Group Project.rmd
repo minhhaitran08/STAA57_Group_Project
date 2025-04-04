@@ -122,16 +122,6 @@ kable(top_institutions, caption = paste("Top 5 Institutions in", top_research_fi
 
 ```
 
-# III. Statistical Analysis (**rayaanxsyed**)
-
-We could pick an area we think that will be most trending (AI for example) and test to see if that is true
-
-- Confidence interval for the average number of researcher 
-
-- Hypothesis Testing
-
-- Bootstrapping
-
 # IV. Predictive modeling (Regression) (**Minh**)
 
 **1. Logistic Regression Model**
