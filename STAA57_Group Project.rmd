@@ -140,7 +140,7 @@ We could pick an area we think that will be most trending (AI for example) and t
 
 The allocation of research funding plays a pivotal role in identifying key research fields that attract the attention of funding bodies such as Canada Research Chair Program and other major investors. These funding trend are essential indicators of the areas prioritized by the Canadian government and industry stakeholders in the automotive sector. Understanding these trends can provide insight into the direction of research investment, thereby influencing strategic decision in academia and industry alike.
 
-To analyze the factors influencing research funding, we employed a logistic regression model with the primary dependent variable being **is_Funded**. This variable take a value of 1 if the researcher has secured funding from the Canada Research Chair program or other similar grants, and 0 otherwise. The independent variables include various researcher's primary fields as categorized in **Tag.1** column of the data set.
+To analyze the factors influencing research funding, we employed a logistic regression model with the primary dependent variable being **is_Funded**. This variable take a value of 1 if the research has secured funding from the Canada Research Chair program or other similar grants, and 0 otherwise. The independent variables include various research's primary fields as categorized in **Tag.1** column of the data set.
 
 *1.2. Result and Key Findings*
 ```{r, include=FALSE}
@@ -166,12 +166,12 @@ reg_data = reg_data %>% select(contains("is_"))
 ```{r, echo=FALSE, eval=TRUE}
 # Logistic regression model
 
-formula = as.formula(paste("is_Funded ~", paste(setdiff(names(reg_data), c("is_Funded", "is_Vehicle.Design")), collapse = " + ")))
-regression = glm( formula , family = binomial, data = reg_data)
+regression = glm(is_Funded ~., family = binomial, data = reg_data)
 summary (regression)
 
 reg_result = data.frame(coefficient = coef(regression), 
                         odd = ceiling(exp(coef(regression)) * 10^2)/10^2)
+
 reg_result = reg_result %>% arrange(desc(coefficient))
 
 ```
@@ -181,9 +181,9 @@ reg_result = reg_result %>% arrange(desc(coefficient))
 kable(reg_result)
 ```
 
-A substantial proportions of the variables in the model exhibit high **p-value** of greater than 5% suggesting that most of the research fields are not statistically significant predictors of whether a researcher will be funded. This is likely due to the limited number of observations available in the data set, which may have constrained the model's ability to detect more nuanced relationships. Nevertheless, the model provides valuable insights into general trends in funding allocation by the Canadian government and major investors.
+A substantial proportions of the variables int he model exhibit high **p-value** of greater than 5% suggesting that most of the research fields are not statistically significant predictors of whether a research project will be funded. This is likely due to the limited number of observations available int he data set, which may have constrained the model's ability to detect more nuanced relationships. Nevertheless, the model provides valuable insights into general trends in funding allocation by the Canadian government and major investors.
 
-Despite the high **p-value** for many variables, certain research fields stood out interns of their impact on the funding probabilities. Specifically, **Forming and Joining**, **Alternative Fuels**, and **Internal Combustion Engines** demonstrated relatively high log-odds ratios. These fields exhibited around 3 times higher odds of receiving funding than those in other areas. In addition, **is_Forming.and.Joining** and **is_Alternative.Fuels** variables were both statistically significant with p-values of approximately 4% and 10% respectively which further support the findings above.
+Despite the high **p-value** for many variables, certain research fields stood out interns of their impact on the funding probabilities. Specifically, **Forming and Joining**, **Alternative Fuels**, and **Internal Combustion Engines** demonstrated relatively high log-odds ratios. These fields exhibited 4 to 5 times higher odds of receiving funding than those in other areas. In addition, **is_Forming.and.Joining** and **is_Alternative.Fuels** variables were both statistically significant with p-values of approximately 4% and 10% respectively which further support the findings above.
 
 The significance and high odd of **Forming and Joining** research fields aligns with ongoing research efforts to improve manufacturing process which are crucial for the production of commercial vehicles. While the corresponding number for **Alternative Fuels** underscores the importance of environmentally sustainable technologies, which are increasingly emphasized in both governmental policy and industry innovation.
 
@@ -204,12 +204,7 @@ c.index = vector()
 for (i in 1:k){
   reg_data.train = reg_validation %>% filter(group_ind != i)
   reg_data.test = reg_validation %>% filter(group_ind == i)
-  formula = as.formula(paste("is_Funded ~",
-                             paste(setdiff(
-                               names(reg_data),
-                               c("is_Funded", "is_Vehicle.Design")), 
-                               collapse = " + ")))
-  logit.mod = glm(formula, family = binomial, data = reg_data.train)
+  logit.mod = glm(is_Funded ~ ., family = binomial, data = reg_data.train)
   pi_hat = predict(logit.mod, newdata=reg_data.test, type="response")
   m.roc=roc(reg_data.test$is_Funded ~ pi_hat)
   c.index[i] = auc(m.roc)
@@ -219,7 +214,7 @@ cat("AUC score:",c.index )
 cat("Average AUC score:", mean(c.index))
 ```
 
-The model predictive performance assessed using the AUC score. The resulting average AUC score was `r mean(c.index)`, which suggests a fair to somewhat weak performance. This moderate performance is likely attributed to the large number of non-significant variables in the model, reflecting the challenges posed by limited data. Nevertheless, the model remains useful for identifying general funding trends rather than providing highly accurate predictions for individual research projects. It serves its purpose of illustrating that dominant research areas that are attracting funding, which is the primary objective of the analysis.
+The model predictive performance assessed using the AUC score. The resulting average AUC score was 0.609, which suggests a fair to somewhat weak performance. This moderate performance is likely attributed to the large number of non-significant variables in the model, reflecting the challenges posed by limited data. Nevertheless, the model remains useful for identifying general funding trends rather than providing highly accurate predictions for individual research projects. It serves its purpose of illustrating that dominant research areas that are attracting funding, which is the primary objective of the analysis.
 
 # V. Summary
 
@@ -229,3 +224,4 @@ The logistic regression analysis provides valuable insights into the research fu
 
 However, as the market of Autonomous Vehicles and Electric Vehicles grows, we believe that more resources should be reallocate to support researches in these emerging areas. Fields such as **Autonomy and AI**, **Batteries and Fuel Cells**, and **Hybrid and Electric Vehicles** are expected to play a pivotal role in shaping the future of automotive industry.
 # Appendix
+
